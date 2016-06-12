@@ -32,7 +32,6 @@ end
 num_fea = size(data,2);
 if num_fea <= K
     idx_select = 1:num_fea;
-    disp('No selection is performed');
     return
 end
 
@@ -47,7 +46,7 @@ MAX = 200;
 idx_select = zeros(K,1);
 [~, idxs] = sort(rel,'descend');
 if MAX <= K
-    idx_select = idxs(1:MAX);
+    idx_select = idxs(1:K);
     return;
 else
     idx_select(1) = idxs(1);

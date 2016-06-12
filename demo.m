@@ -3,7 +3,7 @@
 % L. Sun and M. Kudo. Optimization of Classificer Chains via Conditional Likelihood Maximization. 
 % A submission to Pattern Recognition. 
 %
-% The program shows how the oCC/EoCC program (The main function is 'oCC.m'/'EoCC') can be used.
+% The program shows how the oCC/EoCC program (The main function is 'oCC.m'/'EoCC.m') can be used.
 %
 % Please type 'help oCC' or 'help EoCC' under MATLAB prompt for more information.
 %
@@ -20,7 +20,7 @@
 % C files of the packages.
 
 
-%% To repear the experiments
+%% To repeat the experiments
 rng(1);
 
 %% Add necessary pathes
@@ -28,11 +28,19 @@ addpath('data','eval');
 addpath(genpath('func'));
 
 %% Set parameters
-occ.k = 0.8;
-occ.M = 100;
+% oCC
+occ.k = 0.8;         % percent of selected parents
+occ.M = 0.5;         % percent of selected features
+% EoCC
+eocc.m = 10;         % number of ensembles
+eocc.per_F = 0.5;    % random sampling on features
+eocc.per_N = 0.75;   % random sampling on instances
+eocc.k = 0.8;        % percent of selected parents
+eocc.M = 0.8;        % percent of selected features
 
-%% Datasets and methods
+%% Choose a datasets and method
 dataset = 'medical';
+method  = 'occ';
 load([dataset,'.mat']);
 
 %% Perform n-fold cross validation
@@ -42,7 +50,12 @@ indices = crossvalind('Kfold',size(data,1),num_fold);
 for i = 1:num_fold
     disp(['Round ',num2str(i)]);
     test = (indices == i); train = ~test;
-    tic; Pre_Labels = oCC(data(train,:),target(:,train),data(test,:),occ);
+    switch method
+        case 'occ'
+            tic; Pre_Labels = oCC(data(train,:),target(:,train),data(test,:),occ);
+        case 'eocc'
+            tic; Pre_Labels = EoCC(data(train,:),target(:,train),data(test,:),eocc);
+    end
     Results(1,i) = toc;
     Results(2:end,i) = Evaluation(Pre_Labels,target(:,test));
 end
@@ -50,4 +63,5 @@ meanResults = squeeze(mean(Results,2));
 stdResults = squeeze(std(Results,0,2) / sqrt(size(Results,2)));
 
 %% Show the experimental results
-printmat([meanResults,stdResults],dataset,'Time ExactM HammingS MacroF1 MicroF1','Mean Std.');
+printmat([meanResults,stdResults],[dataset,'_',method],...
+    'Time ExactM HammingS MacroF1 MicroF1','Mean Std.');

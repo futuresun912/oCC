@@ -12,8 +12,8 @@ function Pre_Labels = oCC(train_data,train_target,test_data,opts)
 %           train_target     An L x N label matrix, each column is a label set
 %           test_data        An Nt x D test data matrix, each row is a test sample
 %           opts             Parameters of oCC
-%             opts.k         Percentrage of selected parents
-%             opts.M         Number of selected features
+%             opts.k         Percent of selected parents
+%             opts.M         Percent of selected features
 %
 %       Output
 %           Pre_Labels       An L x Nt output matrix, each column is a predicted label set
@@ -23,8 +23,8 @@ function Pre_Labels = oCC(train_data,train_target,test_data,opts)
 [num_test,num_feature] = size(test_data);
 
 %% Set parameters
-k = round( num_label * opts.kpercent );
-M = opts.M;
+k = round( num_label * opts.k );
+M = round( num_feature * opts.M );
 
 %% Set the Liblinear package
 if num_train > num_feature
