@@ -35,13 +35,14 @@ end
 
 %% Build a classifier chain in random label order
 pa = [];
-chain = randperm(num_label);
-disc_train = myDisc(train_data,3,0.5);
-Pre_Labels = zeros(num_test,num_label);    
-null_target = zeros(num_test,1); 
+disc_train   = myDisc(train_data,3,0.5);
+Pre_Labels   = zeros(num_test,num_label);    
+null_target  = zeros(num_test,1); 
 train_target = train_target';
-train_data = sparse(train_data);
-test_data = sparse(test_data);
+train_data   = sparse(train_data);
+test_data    = sparse(test_data);
+% Chain order selection
+chain = orderSelect(train_data,train_target,opts);
 for j = chain 
     if ~all(train_target(:,j)==0)
         % Stage 1: label correlation modeling
@@ -54,7 +55,6 @@ for j = chain
         Pre_Labels(:,j) = libpredict(null_target,[test_data(:,ind_F),Pre_Labels(:,kpa)],model,'-q');
         pa = [pa,j];
     end
-
 end
 Pre_Labels = Pre_Labels';
 
